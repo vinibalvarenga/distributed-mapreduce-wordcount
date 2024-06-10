@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class Master {
     private static final String localfileName = "./master/random_lines.txt";
@@ -33,24 +34,29 @@ public class Master {
 
     public static void main(String[] args) {
         List<String> contents = readFileContents();
+        List<List<String>> serverSplits = allocateSplitsToServers(contents, servers.size());
         List<FTPClient> ftpClients = openFtpClients();
 
+        CompletableFuture<?>[] futures = new CompletableFuture<?>[servers.size()];
+        for (int i= 0; i < servers.size(); i++) {
+            int serverIndex = i;
 
-        // Fase 1: send the files to the servers
-        for (int i = 0; i < contents.size(); i++){
-            FTPClient ftpClient = ftpClients.get(i % ftpClients.size());
-            System.out.println("Processing file on server: " + servers.get(i % ftpClients.size()));
-            processFileOnServer(ftpClient, contents.get(i));
+            // Macro phase 1: split
+
+            futures[serverIndex] = CompletableFuture.runAsync(() -> {
+                // send the files (splits) to the servers
+                FTPClient ftpClient = ftpClients.get(serverIndex);
+                List<String> serverContent = serverSplits.get(serverIndex);
+                sendFileToServer(ftpClient, serverContent);
+            }).thenRunAsync(() -> {
+                // send the ip of the other servers and tell the servers to start the map function 
+                openSocketsAndBuffers();
+                sendServerIPsAndStartMapFunction(serverIndex);
+                receiveShuffleCompleteMessages(readers.get(serverIndex));
+            });
         }
-
-        closeFtpClients(ftpClients);
-
-        // Fase 2: send the ip of the other servers and tell the servers to start the map function 
-        openSocketsAndBuffers();
-        sendServerIPsAndStartMapFunction();
-
-        // Fase 3: receive shuffle complete messages from servers
-        receiveShuffleCompleteMessages();
+        
+        CompletableFuture.allOf(futures).join();
     }
 
 
@@ -71,16 +77,6 @@ public class Master {
         return ftpClients;
     }
 
-    private static void closeFtpClients(List<FTPClient> ftpClients) {
-        for (FTPClient ftpClient : ftpClients) {
-            try {
-                ftpClient.logout();
-                ftpClient.disconnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private static void openSocketsAndBuffers() {
         for (String server : servers) {
@@ -99,8 +95,7 @@ public class Master {
         }
     }
 
-    private static void sendServerIPsAndStartMapFunction() {
-        for (int i = 0; i < servers.size(); i++) {
+    private static void sendServerIPsAndStartMapFunction(int i) {
             try {
                 BufferedWriter writer = writers.get(i);
                 // Enviar sinal de início
@@ -123,20 +118,19 @@ public class Master {
                 // Enviar sinal de que terminamos de enviar os IPs
                 writer.write("END_OF_IPS\n");
                 writer.flush();
+
     
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
         System.out.println("IPs sent to servers.");
     }
 
-    private static void receiveShuffleCompleteMessages() {
-        for (BufferedReader reader : readers) {
+    private static void receiveShuffleCompleteMessages(BufferedReader reader) {
             try {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (line.equals("SHUFFLE_COMPLETE")) {
+                    if (line.equals("SHUFFLE_FINISHED")) {
                         System.out.println("Shuffle complete received from server.");
                         break;
                     }
@@ -144,51 +138,28 @@ public class Master {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
     }
 
-    private static void processFileOnServer(FTPClient ftpClient, String content) {
+    private static void sendFileToServer(FTPClient ftpClient, List<String> content) {
         try {
-            if (!fileExistsOnServer(ftpClient)) {
-                uploadFileToServer(ftpClient, content);
+            // Transforma a lista de strings em um único string onde cada item da lista é uma linha
+            String fileContent = String.join("\n", content);
+    
+            // Converte o string para um InputStream
+            InputStream inputStream = new ByteArrayInputStream(fileContent.getBytes());
+    
+            // Envia o arquivo para o servidor, sobrescrevendo se já existir
+            ftpClient.deleteFile(fileName);
+            boolean success = ftpClient.storeFile(fileName, inputStream);
+    
+            if (!success) {
+                System.out.println("File upload failed. FTP Error code: " + ftpClient.getReplyCode());
             } else {
-                appendLineToServerFile(ftpClient, content);
-                displayFileContentFromServer(ftpClient);
+                System.out.println("File uploaded successfully.");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static boolean fileExistsOnServer(FTPClient ftpClient) throws IOException {
-        FTPFile[] files = ftpClient.listFiles();
-        for (FTPFile file : files) {
-            if (file.getName().equals(fileName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void uploadFileToServer(FTPClient ftpClient, String content) throws IOException {
-        // Create a new empty file
-        ftpClient.storeFile(fileName,  new ByteArrayInputStream(new byte[0]));
-
-        // Add the first line to the file
-        ByteArrayInputStream inputStream = new ByteArrayInputStream((content + "\n").getBytes());
-        ftpClient.appendFile(fileName, inputStream);
-
-        int errorCode = ftpClient.getReplyCode();
-        if (errorCode != 226) {
-            System.out.println("File upload failed. FTP Error code: " + errorCode);
-        } else {
-            System.out.println("File uploaded successfully.");
-        }
-    }
-
-    private static void appendLineToServerFile(FTPClient ftpClient, String content) throws IOException {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream((content + "\n").getBytes());
-        ftpClient.appendFile(fileName, inputStream);
     }
 
     private static void displayFileContentFromServer(FTPClient ftpClient) throws IOException {
@@ -211,4 +182,33 @@ public class Master {
         }
         return contents;
     }
+
+
+    private static List<List<String>> allocateSplitsToServers(List<String> contents, int numServers) {
+        List<List<String>> serverSplits = new ArrayList<>();
+        for (int i = 0; i < numServers; i++) {
+            serverSplits.add(new ArrayList<>());
+        }
+
+        for (int i = 0; i < contents.size(); i++) {
+            serverSplits.get(i % numServers).add(contents.get(i));
+        }
+
+        return serverSplits;
+    }
+
+
+    
+    private static void closeFtpClients(List<FTPClient> ftpClients) {
+        for (FTPClient ftpClient : ftpClients) {
+            try {
+                ftpClient.logout();
+                ftpClient.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
+

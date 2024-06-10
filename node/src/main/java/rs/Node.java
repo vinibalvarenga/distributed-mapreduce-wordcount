@@ -144,6 +144,7 @@ public class Node {
                      BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                      PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
                     handleRequest(in, out);
+                    
                 }
             }
         } catch (IOException e) {
