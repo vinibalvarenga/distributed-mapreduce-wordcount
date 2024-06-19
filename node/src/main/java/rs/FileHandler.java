@@ -5,9 +5,15 @@ import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class FileHandler {
     private final String filePath;
@@ -20,7 +26,7 @@ public class FileHandler {
     }
 
     public Map<String, Integer> mapHandler() {
-        System.out.println("Starting Map");
+        System.out.println("[Starting Map]");
         File file = new File(filePath);
         Map<String, Integer> wordCount = new HashMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -29,7 +35,7 @@ public class FileHandler {
                 Map<String, Integer> lineWordCount = WordCountUtils.mapFunction(line);
                 WordCountUtils.mergeWordCounts(wordCount, lineWordCount);
             }
-            System.out.println(wordCount);
+           // System.out.println(wordCount);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,6 +46,7 @@ public class FileHandler {
         System.out.println("[Shuffling] words to servers");
         List<Map<String, Integer>> serverWordCounts = WordCountUtils.splitWordCounts(wordCount, knownServers.size());
         sendWordCountsToServers(fromNodeIp, serverWordCounts, knownServers);
+        System.out.println("[Shuffling] finished");
     }
 
     private void sendWordCountsToServers(String fromNodeIp, List<Map<String, Integer>> serverWordCounts, List<String> knownServers) {
@@ -58,18 +65,18 @@ public class FileHandler {
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             String remoteFile = generateRemoteFileName(fromNodeIp, toNodeIP);
             String wordCountString = WordCountUtils.mapToString(wordCount);
-            System.out.println("Sending Word count to server" + toNodeIP + " : \n" + wordCountString);
+         //   System.out.println("Sending Word count to server" + toNodeIP + " : \n" + wordCountString);
             InputStream inputStream = new ByteArrayInputStream(wordCountString.getBytes(StandardCharsets.UTF_8));
             boolean done = ftpClient.storeFile(remoteFile, inputStream);
             inputStream.close();
             if (done) {
                 InputStream retrieveFileStream = ftpClient.retrieveFileStream(remoteFile);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(retrieveFileStream));
-                String line;
-                System.out.println("Word count file: " + remoteFile + " is uploaded successfully to server " + toNodeIP + ". Word count file content:\n");
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
+             //   String line;
+               // System.out.println("Word count file: " + remoteFile + " is uploaded successfully to server " + toNodeIP + ". Word count file content:\n");
+               // while ((line = reader.readLine()) != null) {
+               //     System.out.println(line);
+             //   }
                 reader.close();
                 ftpClient.completePendingCommand(); // Important, to finalize the command
             }
@@ -87,8 +94,50 @@ public class FileHandler {
             }
         }
     }
+    
+    public String reduce_one() {
+        Map<String, Integer> wordCounts = new HashMap<>();
+        String filePattern = "/wordCount-From-.*-To-.*\\.txt";
+        try (Stream<Path> paths = Files.walk(Paths.get("."))) {
+            paths.filter(Files::isRegularFile)
+                .filter(p -> Pattern.matches(filePattern, p.toString()))
+                .forEach(filePath -> processFile(filePath, wordCounts));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        return formatMinMaxCounts(wordCounts);
+    }
+
+    private void processFile(Path filePath, Map<String, Integer> wordCounts) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                processLine(line, wordCounts);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void processLine(String line, Map<String, Integer> wordCounts) {
+        String[] parts = line.split(": ");
+        String word = parts[0];
+        int count = Integer.parseInt(parts[1]);
+        wordCounts.put(word, wordCounts.getOrDefault(word, 0) + count);
+    }
+
+    private String formatMinMaxCounts(Map<String, Integer> wordCounts) {
+        if (wordCounts.isEmpty()) {
+            return "[0, 0]";
+        } else {
+            int min = Collections.min(wordCounts.values());
+            int max = Collections.max(wordCounts.values());
+            return "[" + min + ", " + max + "]";
+        }
+    }
 
     private String generateRemoteFileName(String fromNodeIp, String toNodeIp) {
-        return "/wordCount-From-" + fromNodeIp.replace(".", "_") + "To-" + toNodeIp.replace(".", "_") + ".txt";
+        return "/wordCount-From-" + fromNodeIp.replace(".", "_") + "-To-" + toNodeIp.replace(".", "_") + ".txt";
     }
 }
