@@ -76,6 +76,27 @@ public class SocketManager {
         }
     }
 
+    public String reduce_one(int serverIndex) {
+        try {
+            BufferedWriter writer = writers.get(serverIndex);
+            writer.write("START_REDUCE_ONE\n");
+            writer.flush();
+
+            BufferedReader reader = readers.get(serverIndex);
+            String line;
+            System.out.println("Waiting for reduce one complete from server " + servers.get(serverIndex) + "...");
+            while ((line = reader.readLine()) != "FINISHED_REDUCE_ONE") {
+                System.out.println("Line received: " + line);
+                line = reader.readLine();
+                System.out.println("Reduce one complete received from server " + servers.get(serverIndex) + " , result: " + line);
+                return line;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
   public void closeSocketsAndBuffers() {
     for (int i = 0; i < servers.size(); i++) {
       try {

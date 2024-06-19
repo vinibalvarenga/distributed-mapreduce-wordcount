@@ -34,6 +34,23 @@ public class Master {
         }
 
         CompletableFuture.allOf(futures).join();
+
+        // First reduce phase
+
+        CompletableFuture<?>[] futures2 = new CompletableFuture<?>[servers.size()];
+
+        for (int i = 0; i < servers.size(); i++) {
+            int serverIndex = i;
+
+            futures2[serverIndex] = CompletableFuture.runAsync(() -> {
+                System.out.println("Starting reduce phase for server " + servers.get(serverIndex));
+                String reduce = socketManager.reduce_one(serverIndex);
+                System.out.println("Reduced: " + reduce);
+            });
+        }
+
+        CompletableFuture.allOf(futures2).join();
+
         ftpManager.closeFtpClients(ftpClients);
         socketManager.closeSocketsAndBuffers();
        
