@@ -42,7 +42,7 @@ and send S1 S2 and S3 then try with S4 S5 S6 (create manual simple strings)
 
 ### OBS.: SSH connection
 to open
-	ssh alvarenga-23@tp-1a207-22
+	ssh alvarenga-23@tp-1a201-22
 
 to quit
 	exit
