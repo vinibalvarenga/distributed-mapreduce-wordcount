@@ -1,6 +1,8 @@
 package rs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,8 +18,11 @@ public class Master {
         List<List<String>> serverSplits = FileSplitter.allocateSplitsToServers(contents, servers.size());
         FTPManager ftpManager = new FTPManager(servers);
         SocketManager socketManager = new SocketManager(servers);
-        List<FTPClient> ftpClients = ftpManager.openFtpClients();
+        List<FTPClient> ftpClients = ftpManager.openFtpClients();   
+        List<List<Integer>> reducedRanges = Utils.initializeReducedRanges(servers.size());
+
         socketManager.openSocketsAndBuffers();
+       
 
         CompletableFuture<?>[] futures = new CompletableFuture<?>[servers.size()];
         for (int i = 0; i < servers.size(); i++) {
@@ -46,13 +51,20 @@ public class Master {
                 System.out.println("Starting reduce phase for server " + servers.get(serverIndex));
                 String reduce = socketManager.reduce_one(serverIndex);
                 System.out.println("Reduced range: " + reduce);
+                Utils.extractIntegersAndAddToList(reduce, reducedRanges, serverIndex);
             });
         }
 
+        
         CompletableFuture.allOf(futures2).join();
+        
+        int fmax = Collections.min(reducedRanges.get(0));
+        int fmin = Collections.max(reducedRanges.get(1));
 
         ftpManager.closeFtpClients(ftpClients);
         socketManager.closeSocketsAndBuffers();
        
     }
+
+   
 }
