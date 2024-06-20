@@ -84,7 +84,6 @@ public class SocketManager {
 
             BufferedReader reader = readers.get(serverIndex);
             String line;
-            System.out.println("Waiting for reduce one complete from server " + servers.get(serverIndex) + "...");
             while ((line = reader.readLine()) != "FINISHED_REDUCE_ONE") {
                 System.out.println("Line received: " + line);
                 line = reader.readLine();

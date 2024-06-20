@@ -1,7 +1,7 @@
-S1 exemplo 1
-S2 falaaalaaa
-S3 brasiiiil
-S4 carcacaa
-S5 ksksksksks
-S6 mfksaflks
+S1 car car hello cat
+S2 dog cat cat hi
+S3 hi hello car car
+S4 hi hi hi hello car
+S5 
+S6 
 S7 mumumuu

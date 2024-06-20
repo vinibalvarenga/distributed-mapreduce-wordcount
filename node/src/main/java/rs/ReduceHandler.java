@@ -11,11 +11,14 @@ import java.util.stream.Stream;
 public class ReduceHandler {
     public String reduce() {
         Map<String, Integer> wordCounts = new HashMap<>();
-        String filePattern = "/wordCount-From-.*-To-.*\\.txt";
+        String filePattern = "wordCount-From-.*-To-.*\\.txt";
         try (Stream<Path> paths = Files.walk(Paths.get("."))) {
             paths.filter(Files::isRegularFile)
-                 .filter(p -> Pattern.matches(filePattern, p.toString()))
-                 .forEach(filePath -> processFile(filePath, wordCounts));
+                 .filter(p -> Pattern.matches(filePattern, p.getFileName().toString()))
+                 .forEach(filePath -> {
+                    processFile(filePath, wordCounts);
+                    System.out.println("wordCounts after processing " + filePath + ": " + wordCounts);
+                });
         } catch (IOException e) {
             e.printStackTrace();
         }

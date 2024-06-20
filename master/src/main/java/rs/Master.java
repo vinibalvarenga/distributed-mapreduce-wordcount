@@ -45,7 +45,7 @@ public class Master {
             futures2[serverIndex] = CompletableFuture.runAsync(() -> {
                 System.out.println("Starting reduce phase for server " + servers.get(serverIndex));
                 String reduce = socketManager.reduce_one(serverIndex);
-                System.out.println("Reduced: " + reduce);
+                System.out.println("Reduced range: " + reduce);
             });
         }
 
