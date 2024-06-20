@@ -1,6 +1,9 @@
-rs/FileHandler.class
 rs/FTPServerManager.class
+rs/MapHandler.class
 rs/WordCountUtils.class
 rs/Node.class
 rs/SocketServerManager.class
+rs/Handler.class
+rs/ReduceHandler.class
 rs/UserManagerUtil.class
+rs/ShuffleHandler.class

@@ -60,15 +60,15 @@ public class SocketServerManager {
                 if (line.equals("END_OF_IPS")) {
                     out.println(String.join(",", knownServers));
                     System.out.println("END_OF_IPS received");
-                    FileHandler fileHandler = new FileHandler(FILE_PATH);
-                    Map<String, Integer> wordCount = fileHandler.mapHandler();
-                    fileHandler.shuffle( wordCount, knownServers, myIp);
+                    Handler handler = new Handler(FILE_PATH);
+                    Map<String, Integer> wordCount = handler.mapHandler();
+                    handler.shuffle( wordCount, knownServers, myIp);
                     out.println("SHUFFLE_FINISHED");
                     return;
                 }
             } else if(line.equals("START_REDUCE_ONE")){
                 System.out.println("Received START_REDUCE_ONE");
-                FileHandler fileHandler = new FileHandler(FILE_PATH);
+                Handler fileHandler = new Handler(FILE_PATH);
                 String reduce = fileHandler.reduce_one();
                 System.out.println("FINISHED_REDUCE_ONE");
                 out.println("FINISHED_REDUCE_ONE");

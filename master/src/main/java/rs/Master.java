@@ -9,7 +9,7 @@ import org.apache.commons.net.ftp.FTPClient;
 public class Master {
     private static final String localfileName = "./master/random_lines.txt";
     private static final String fileName = "random_lines.txt";
-    private static final List<String> servers = Arrays.asList("tp-1a201-22", "tp-1a201-21", "tp-1a201-20");
+    private static final List<String> servers = Arrays.asList("tp-1a252-22", "tp-1a252-23", "tp-1a252-24");
 
     public static void main(String[] args) {
         List<String> contents = FileSplitter.readFileContents(localfileName);
