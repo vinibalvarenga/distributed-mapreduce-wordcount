@@ -50,7 +50,6 @@ public class Master {
             futures2[serverIndex] = CompletableFuture.runAsync(() -> {
                 System.out.println("Starting reduce phase for server " + servers.get(serverIndex));
                 String reduce = socketManager.reduce_one(serverIndex);
-                System.out.println("Reduced range: " + reduce);
                 Utils.extractIntegersAndAddToList(reduce, reducedRanges, serverIndex);
             });
         }
@@ -58,8 +57,12 @@ public class Master {
         
         CompletableFuture.allOf(futures2).join();
         
-        int fmax = Collections.min(reducedRanges.get(0));
-        int fmin = Collections.max(reducedRanges.get(1));
+        int fmin = Collections.min(reducedRanges.get(0));
+        int fmax = Collections.max(reducedRanges.get(1));
+        List<List<Integer>> groupRanges = Utils.calculateGroupRanges(fmin, fmax, servers.size());
+
+        System.out.println("Group ranges: " + groupRanges);
+
 
         ftpManager.closeFtpClients(ftpClients);
         socketManager.closeSocketsAndBuffers();

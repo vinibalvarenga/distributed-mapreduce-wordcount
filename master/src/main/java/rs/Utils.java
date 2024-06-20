@@ -22,4 +22,29 @@ public class Utils {
         reducedRanges.get(0).add(first);
         reducedRanges.get(1).add(second);
     }
+
+    public static List<List<Integer>> calculateGroupRanges(int fmin, int fmax, int numServers) {
+        int rangeSize = (fmax - fmin) / numServers;
+        List<List<Integer>> ranges = new ArrayList<>();
+    
+        List<Integer> minValues = new ArrayList<>();
+        List<Integer> maxValues = new ArrayList<>();
+    
+        int minValue = fmin;
+        int maxValue = fmin + rangeSize;
+        minValues.add(minValue);
+        maxValues.add(maxValue);
+        for (int i = 1; i < numServers; i++) {
+            minValue = maxValue + 1;
+            maxValue = (minValue + rangeSize) <= fmax ? minValue + rangeSize : fmax;
+
+            minValues.add(minValue);
+            maxValues.add(maxValue);
+        }
+    
+        ranges.add(minValues);
+        ranges.add(maxValues);
+    
+        return ranges;
+    }
 }
