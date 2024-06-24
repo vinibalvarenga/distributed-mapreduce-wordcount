@@ -62,7 +62,7 @@ public class SocketManager {
         }
     }
 
-    public void receiveShuffleCompleteMessages(int serverIndex) {
+    public void receiveShuffleOneCompleteMessages(int serverIndex) {
         try {
             BufferedReader reader = readers.get(serverIndex);
             String line;
@@ -134,4 +134,20 @@ public class SocketManager {
       }
     }
   }
+
+  public void receiveShuffleTwoCompleteMessage(int serverIndex) {
+    try {
+      BufferedReader reader = readers.get(serverIndex);
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.equals("FINISHED_SHUFFLE_TWO")) {
+          System.out.println("Shuffle two complete received from server " + servers.get(serverIndex) + ".");
+          break;
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
 }

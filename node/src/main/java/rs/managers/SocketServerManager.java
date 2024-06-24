@@ -1,4 +1,4 @@
-package rs;
+package rs.managers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,11 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import rs.handlers.Handler;
+import rs.utils.WordCountUtils;
 
 public class SocketServerManager {
     private final int socketPort;
@@ -20,9 +22,15 @@ public class SocketServerManager {
     private Map<String, Integer> reduce_one;
     private boolean continueRunning = true;
 
+    private FTPServerManager ftpServerManager;
+
 
     public SocketServerManager(int socketPort) {
         this.socketPort = socketPort;
+    }
+
+    public void setFtpServerManager(FTPServerManager ftpServerManager) {
+        this.ftpServerManager = ftpServerManager;
     }
 
     public void startSocketServer() {
@@ -41,7 +49,7 @@ public class SocketServerManager {
 
     private void handleRequest(BufferedReader in, PrintWriter out) {
         try {
-            Handler handler = new Handler(FILE_PATH);
+            Handler handler = new Handler(FILE_PATH, ftpServerManager);
             String line = in.readLine();
             System.out.println("Line received: " + line);
             if(line == null) {
@@ -53,8 +61,7 @@ public class SocketServerManager {
                // System.out.println("Received START_IP_SENDING");
                 myIp = in.readLine();
                 //System.out.println("Received my IP: " + myIp);
-                line = in.readLine(); // Read the number of servers
-                int numServers = Integer.parseInt(line);
+                int numServers = Integer.parseInt(in.readLine());
                 for (int i = 0; i < numServers; i++) {
                     line = in.readLine(); // Read server IP
                     knownServers.add(line);
@@ -65,7 +72,7 @@ public class SocketServerManager {
                     out.println(String.join(",", knownServers));
                     System.out.println("END_OF_IPS received");
                     Map<String, Integer> wordCount = handler.mapHandler();
-                    handler.shuffle( wordCount, knownServers, myIp);
+                    handler.shuffle_one( wordCount, knownServers, myIp, ftpServerManager);
                     out.println("SHUFFLE_FINISHED");
                     return;
                 }
@@ -83,8 +90,8 @@ public class SocketServerManager {
                 System.out.println("Received server index: " + myIndex);
                 List<List<Integer>> groupRanges = handler.group(in, out);
                 System.out.println("FINISHED_GROUP");
-                handler.shuffle_two(groupRanges, myIndex, reduce_one, myIp, knownServers);
-                //out.println("FINISHED_SHUFFLE_TWO");
+                handler.shuffle_two(groupRanges, reduce_one, myIp, knownServers, ftpServerManager);
+                out.println("FINISHED_SHUFFLE_TWO");
                 return;
             }
             else {

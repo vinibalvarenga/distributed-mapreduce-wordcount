@@ -1,4 +1,4 @@
-package rs;
+package rs.utils;
 
 import org.apache.ftpserver.ftplet.Authority;
 import org.apache.ftpserver.ftplet.FtpException;

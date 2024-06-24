@@ -1,4 +1,4 @@
-package rs;
+package rs.handlers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,6 @@ public class GroupHandler {
         String line;
         List<List<Integer>> groupRanges = new ArrayList<>();
         while (!(line = in.readLine()).equals("FINISHED_GROUP")) {
-            System.out.println("Received line: " + line);
             List<Integer> range = Arrays.stream(line.split(","))
                                         .map(Integer::parseInt)
                                         .collect(Collectors.toList());

@@ -1,8 +1,10 @@
-package rs;
+package rs.handlers;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+
+import rs.utils.WordCountUtils;
 
 public class MapHandler {
     private final String filePath;

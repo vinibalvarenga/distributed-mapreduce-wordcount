@@ -34,7 +34,7 @@ public class Master {
                 ftpManager.sendFileToServer(ftpClient, serverContent, fileName);
             }).thenRunAsync(() -> {
                 socketManager.sendServerIPsAndStartMapFunction(serverIndex);
-                socketManager.receiveShuffleCompleteMessages(serverIndex);
+                socketManager.receiveShuffleOneCompleteMessages(serverIndex);
             });
         }
 
@@ -73,7 +73,7 @@ public class Master {
             futures3[serverIndex] = CompletableFuture.runAsync(() -> {
                 System.out.println("Starting group phase for server " + servers.get(serverIndex));
                 socketManager.group(serverIndex, groupRanges);
-                // wait for shuffle two
+                socketManager.receiveShuffleTwoCompleteMessage(serverIndex);
             });
         }
 
