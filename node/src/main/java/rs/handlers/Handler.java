@@ -29,7 +29,7 @@ public class Handler {
         return mapHandler.process();
     }
 
-    public void shuffle_one(Map<String, Integer> wordCount, List<String> knownServers, String fromNodeIp, FTPServerManager ftpServerManager) {
+    public void shuffle_one(Map<String, Integer> wordCount, List<String> knownServers, String fromNodeIp) {
         shuffleHandler.shuffle_one(wordCount, knownServers, fromNodeIp, ftpServerManager);
     }
 
@@ -41,7 +41,7 @@ public class Handler {
         return groupHandler.group(in, out);
     }
 
-    public void shuffle_two(List<List<Integer>> groupRanges, Map<String, Integer> reduce_one, String myIP, List<String> knownServers, FTPServerManager ftpServerManager) {
+    public void shuffle_two(List<List<Integer>> groupRanges, Map<String, Integer> reduce_one, String myIP, List<String> knownServers) {
         shuffleHandler.shuffle_two(groupRanges, reduce_one, myIP, knownServers, ftpServerManager);
     }
 }

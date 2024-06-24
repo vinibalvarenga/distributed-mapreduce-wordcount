@@ -72,13 +72,14 @@ public class SocketServerManager {
                     out.println(String.join(",", knownServers));
                     System.out.println("END_OF_IPS received");
                     Map<String, Integer> wordCount = handler.mapHandler();
-                    handler.shuffle_one( wordCount, knownServers, myIp, ftpServerManager);
+                    handler.shuffle_one( wordCount, knownServers, myIp);
                     out.println("SHUFFLE_FINISHED");
                     return;
                 }
             } else if(line.equals("START_REDUCE_ONE")){
                 System.out.println("Received START_REDUCE_ONE");
                 reduce_one = handler.reduce_one();
+                System.out.println("reduce one: " + reduce_one);
                 String reduce_intervals = WordCountUtils.takeReduceIntervals(reduce_one);
                 System.out.println("FINISHED_REDUCE_ONE");
                 out.println("FINISHED_REDUCE_ONE");
@@ -90,7 +91,7 @@ public class SocketServerManager {
                 System.out.println("Received server index: " + myIndex);
                 List<List<Integer>> groupRanges = handler.group(in, out);
                 System.out.println("FINISHED_GROUP");
-                handler.shuffle_two(groupRanges, reduce_one, myIp, knownServers, ftpServerManager);
+                handler.shuffle_two(groupRanges, reduce_one, myIp, knownServers);
                 out.println("FINISHED_SHUFFLE_TWO");
                 return;
             }

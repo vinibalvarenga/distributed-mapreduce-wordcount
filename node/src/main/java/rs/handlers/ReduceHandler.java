@@ -2,7 +2,6 @@ package rs.handlers;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -11,7 +10,7 @@ import java.util.stream.Stream;
 public class ReduceHandler {
     public Map<String, Integer> reduce() {
         Map<String, Integer> wordCounts = new HashMap<>();
-        String filePattern = "singleWordCount-From-.*-To-.*\\.txt";
+        String filePattern = "firstWordCount-From-.*-To-.*\\.txt";
         try (Stream<Path> paths = Files.walk(Paths.get("."))) {
             paths.filter(Files::isRegularFile)
                  .filter(p -> Pattern.matches(filePattern, p.getFileName().toString()))

@@ -1,13 +1,9 @@
 package rs.handlers;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-
 import rs.managers.FTPServerManager;
 import rs.utils.WordCountUtils;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +13,7 @@ public class ShuffleHandler {
             FTPServerManager ftpServerManager) {
         System.out.println("[Shuffling] words to servers");
         List<Map<String, Integer>> serverWordCounts = WordCountUtils.splitWordCounts(wordCount, knownServers.size());
-        ftpServerManager.sendDataToServers(fromNodeIp, "singleWordCount",serverWordCounts, knownServers, true);
+        ftpServerManager.sendDataToServers(fromNodeIp, "firstWordCount",serverWordCounts, knownServers, true);
         System.out.println("[Shuffling] finished");
     }
 
@@ -39,6 +35,8 @@ public class ShuffleHandler {
                 }
             }
         }
+
+        System.out.println("Server entries: " + serverEntries);
 
         ftpServerManager.sendDataToServers(myIP, "groupWordCount",serverEntries, knownServers, false);
         System.out.println("[Shuffling] finished");

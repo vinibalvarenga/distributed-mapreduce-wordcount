@@ -1,6 +1,5 @@
 package rs;
 
-import org.apache.ftpserver.FtpServer;
 import org.apache.log4j.PropertyConfigurator;
 
 import rs.managers.FTPServerManager;
