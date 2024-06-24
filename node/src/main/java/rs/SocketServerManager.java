@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ public class SocketServerManager {
     private static final String FILE_PATH = System.getProperty("java.io.tmpdir") + "/alvarenga-23/random_lines.txt";
     private static List<String> knownServers = new ArrayList<>();
     private static String myIp;
+    private static int myIndex;
+    private Map<String, Integer> reduce_one;
     private boolean continueRunning = true;
 
 
@@ -38,6 +41,7 @@ public class SocketServerManager {
 
     private void handleRequest(BufferedReader in, PrintWriter out) {
         try {
+            Handler handler = new Handler(FILE_PATH);
             String line = in.readLine();
             System.out.println("Line received: " + line);
             if(line == null) {
@@ -60,7 +64,6 @@ public class SocketServerManager {
                 if (line.equals("END_OF_IPS")) {
                     out.println(String.join(",", knownServers));
                     System.out.println("END_OF_IPS received");
-                    Handler handler = new Handler(FILE_PATH);
                     Map<String, Integer> wordCount = handler.mapHandler();
                     handler.shuffle( wordCount, knownServers, myIp);
                     out.println("SHUFFLE_FINISHED");
@@ -68,13 +71,23 @@ public class SocketServerManager {
                 }
             } else if(line.equals("START_REDUCE_ONE")){
                 System.out.println("Received START_REDUCE_ONE");
-                Handler fileHandler = new Handler(FILE_PATH);
-                String reduce = fileHandler.reduce_one();
+                reduce_one = handler.reduce_one();
+                String reduce_intervals = WordCountUtils.takeReduceIntervals(reduce_one);
                 System.out.println("FINISHED_REDUCE_ONE");
                 out.println("FINISHED_REDUCE_ONE");
-                out.println(reduce);
+                out.println(reduce_intervals);
                 return;
-            } else {
+            } else if(line.equals("START_GROUP")){
+                System.out.println("Received START_GROUP");
+                myIndex = Integer.parseInt(in.readLine());
+                System.out.println("Received server index: " + myIndex);
+                List<List<Integer>> groupRanges = handler.group(in, out);
+                System.out.println("FINISHED_GROUP");
+                handler.shuffle_two(groupRanges, myIndex, reduce_one, myIp, knownServers);
+                //out.println("FINISHED_SHUFFLE_TWO");
+                return;
+            }
+            else {
                 out.println("Error interpreting the request");
                 continueRunning = false;
                 return;
@@ -84,4 +97,5 @@ public class SocketServerManager {
         }
         out.println("Error interpreting the request");
     }
+
 }

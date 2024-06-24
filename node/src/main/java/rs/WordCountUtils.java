@@ -1,6 +1,7 @@
 package rs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,5 +42,15 @@ public class WordCountUtils {
             stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    public static String takeReduceIntervals(Map<String, Integer> wordCounts) {
+        if (wordCounts.isEmpty()) {
+            return "[0, 0]";
+        } else {
+            int min = Collections.min(wordCounts.values());
+            int max = Collections.max(wordCounts.values());
+            return "[" + min + ", " + max + "]";
+        }
     }
 }

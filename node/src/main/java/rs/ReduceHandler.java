@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ReduceHandler {
-    public String reduce() {
+    public Map<String, Integer> reduce() {
         Map<String, Integer> wordCounts = new HashMap<>();
         String filePattern = "wordCount-From-.*-To-.*\\.txt";
         try (Stream<Path> paths = Files.walk(Paths.get("."))) {
@@ -22,7 +22,7 @@ public class ReduceHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return formatMinMaxCounts(wordCounts);
+        return wordCounts;
     }
 
     private void processFile(Path filePath, Map<String, Integer> wordCounts) {
@@ -43,13 +43,5 @@ public class ReduceHandler {
         wordCounts.put(word, wordCounts.getOrDefault(word, 0) + count);
     }
 
-    private String formatMinMaxCounts(Map<String, Integer> wordCounts) {
-        if (wordCounts.isEmpty()) {
-            return "[0, 0]";
-        } else {
-            int min = Collections.min(wordCounts.values());
-            int max = Collections.max(wordCounts.values());
-            return "[" + min + ", " + max + "]";
-        }
-    }
+
 }

@@ -1,6 +1,5 @@
 package rs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +22,7 @@ public class Master {
 
         socketManager.openSocketsAndBuffers();
        
+        // Send files, Map phase and Shuffle phases
 
         CompletableFuture<?>[] futures = new CompletableFuture<?>[servers.size()];
         for (int i = 0; i < servers.size(); i++) {
@@ -63,6 +63,21 @@ public class Master {
 
         System.out.println("Group ranges: " + groupRanges);
 
+        // Group phase
+
+        CompletableFuture<?>[] futures3 = new CompletableFuture<?>[servers.size()];
+
+        for (int i = 0; i < servers.size(); i++) {
+            int serverIndex = i;
+
+            futures3[serverIndex] = CompletableFuture.runAsync(() -> {
+                System.out.println("Starting group phase for server " + servers.get(serverIndex));
+                socketManager.group(serverIndex, groupRanges);
+                // wait for shuffle two
+            });
+        }
+
+        CompletableFuture.allOf(futures3).join();
 
         ftpManager.closeFtpClients(ftpClients);
         socketManager.closeSocketsAndBuffers();

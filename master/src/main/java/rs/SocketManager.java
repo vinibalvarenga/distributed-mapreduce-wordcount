@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SocketManager {
     private static final int SOCKET_PORT = 3457;
@@ -95,6 +96,32 @@ public class SocketManager {
         }
         return null;
     }
+
+    public void group(int serverIndex, List<List<Integer>> groupRanges) {
+    try {
+        BufferedWriter writer = writers.get(serverIndex);
+        writer.write("START_GROUP\n");
+        writer.flush();
+
+        // Send the server index
+        writer.write(serverIndex + "\n");
+        writer.flush();
+
+        // Convert groupRanges to a string and send it
+        for (List<Integer> range : groupRanges) {
+            String rangeStr = range.stream()
+                                   .map(String::valueOf)
+                                   .collect(Collectors.joining(","));
+            writer.write(rangeStr + "\n");
+            writer.flush();
+        }
+
+        writer.write("FINISHED_GROUP\n");
+        writer.flush();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 
   public void closeSocketsAndBuffers() {
     for (int i = 0; i < servers.size(); i++) {
