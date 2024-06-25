@@ -22,11 +22,11 @@ public class Master {
         List<List<String>> serverSplits = FileSplitter.allocateSplitsToServers(contents, servers.size());
         FTPManager ftpManager = new FTPManager(servers);
         SocketManager socketManager = new SocketManager(servers);
-        List<FTPClient> ftpClients = ftpManager.openFtpClients();   
+        List<FTPClient> ftpClients = ftpManager.openFtpClients();
         List<List<Integer>> reducedRanges = Utils.initializeReducedRanges(servers.size());
 
         socketManager.openSocketsAndBuffers();
-       
+
         // Send files, Map phase and Shuffle phases
 
         CompletableFuture<?>[] futures = new CompletableFuture<?>[servers.size()];
@@ -53,15 +53,14 @@ public class Master {
             int serverIndex = i;
 
             futures2[serverIndex] = CompletableFuture.runAsync(() -> {
-                System.out.println("Starting reduce phase for server " + servers.get(serverIndex));
+                System.out.println("Starting reduce one phase for server " + servers.get(serverIndex));
                 String reduce = socketManager.reduce_one(serverIndex);
                 Utils.extractIntegersAndAddToList(reduce, reducedRanges, serverIndex);
             });
         }
 
-        
         CompletableFuture.allOf(futures2).join();
-        
+
         int fmin = Collections.min(reducedRanges.get(0));
         int fmax = Collections.max(reducedRanges.get(1));
         List<List<Integer>> groupRanges = Utils.calculateGroupRanges(fmin, fmax, servers.size());
@@ -84,12 +83,25 @@ public class Master {
 
         CompletableFuture.allOf(futures3).join();
 
+        // Second reduce phase
 
+        CompletableFuture<?>[] futures4 = new CompletableFuture<?>[servers.size()];
+
+        for (int i = 0; i < servers.size(); i++) {
+            int serverIndex = i;
+
+            futures2[serverIndex] = CompletableFuture.runAsync(() -> {
+                System.out.println("Starting reduce two phase for server " + servers.get(serverIndex));
+                socketManager.reduce_two(serverIndex);
+                // Utils.extractIntegersAndAddToList(reduce, reducedRanges, serverIndex);
+            });
+        }
+
+        CompletableFuture.allOf(futures4).join();
 
         ftpManager.closeFtpClients(ftpClients);
         socketManager.closeSocketsAndBuffers();
-       
+
     }
 
-   
 }

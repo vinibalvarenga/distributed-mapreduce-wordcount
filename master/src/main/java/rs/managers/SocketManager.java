@@ -88,7 +88,8 @@ public class SocketManager {
             while ((line = reader.readLine()) != "FINISHED_REDUCE_ONE") {
                 System.out.println("Line received: " + line);
                 line = reader.readLine();
-                System.out.println("Reduce one complete received from server " + servers.get(serverIndex) + " , result: " + line);
+                System.out.println(
+                        "Reduce one complete received from server " + servers.get(serverIndex) + " , result: " + line);
                 return line;
             }
         } catch (Exception e) {
@@ -98,56 +99,75 @@ public class SocketManager {
     }
 
     public void group(int serverIndex, List<List<Integer>> groupRanges) {
-    try {
-        BufferedWriter writer = writers.get(serverIndex);
-        writer.write("START_GROUP\n");
-        writer.flush();
-
-        // Send the server index
-        writer.write(serverIndex + "\n");
-        writer.flush();
-
-        // Convert groupRanges to a string and send it
-        for (List<Integer> range : groupRanges) {
-            String rangeStr = range.stream()
-                                   .map(String::valueOf)
-                                   .collect(Collectors.joining(","));
-            writer.write(rangeStr + "\n");
+        try {
+            BufferedWriter writer = writers.get(serverIndex);
+            writer.write("START_GROUP\n");
             writer.flush();
+
+            // Send the server index
+            writer.write(serverIndex + "\n");
+            writer.flush();
+
+            // Convert groupRanges to a string and send it
+            for (List<Integer> range : groupRanges) {
+                String rangeStr = range.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","));
+                writer.write(rangeStr + "\n");
+                writer.flush();
+            }
+
+            writer.write("FINISHED_GROUP\n");
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        writer.write("FINISHED_GROUP\n");
-        writer.flush();
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
 
-  public void closeSocketsAndBuffers() {
-    for (int i = 0; i < servers.size(); i++) {
-      try {
-        readers.get(i).close();
-        writers.get(i).close();
-        sockets.get(i).close();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+    public void reduce_two(int serverIndex) {
+        try {
+            BufferedWriter writer = writers.get(serverIndex);
+            writer.write("START_REDUCE_TWO\n");
+            writer.flush();
+
+            BufferedReader reader = readers.get(serverIndex);
+            String line;
+            while ((line = reader.readLine()) != "FINISHED_REDUCE_TWO") {
+                System.out.println("Line received: " + line);
+                line = reader.readLine();
+                System.out.println(
+                        "Reduce two complete received from server " + servers.get(serverIndex) + " , result: " + line);
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();}
     }
-  }
 
-  public void receiveShuffleTwoCompleteMessage(int serverIndex) {
-    try {
-      BufferedReader reader = readers.get(serverIndex);
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (line.equals("FINISHED_SHUFFLE_TWO")) {
-          System.out.println("Shuffle two complete received from server " + servers.get(serverIndex) + ".");
-          break;
+    public void closeSocketsAndBuffers() {
+        for (int i = 0; i < servers.size(); i++) {
+            try {
+                readers.get(i).close();
+                writers.get(i).close();
+                sockets.get(i).close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
-  }
+
+    public void receiveShuffleTwoCompleteMessage(int serverIndex) {
+        try {
+            BufferedReader reader = readers.get(serverIndex);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.equals("FINISHED_SHUFFLE_TWO")) {
+                    System.out.println("Shuffle two complete received from server " + servers.get(serverIndex) + ".");
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -94,6 +94,14 @@ public class SocketServerManager {
                 handler.shuffle_two(groupRanges, reduce_one, myIp, knownServers);
                 out.println("FINISHED_SHUFFLE_TWO");
                 return;
+            } else if(line.equals("START_REDUCE_TWO")){
+                System.out.println("Received START_REDUCE_TWO");
+                Map<String, Integer> reduce_two = handler.reduce_two();
+                System.out.println("reduce two: " + reduce_two);
+                System.out.println("FINISHED_REDUCE_TWO");
+                out.println("FINISHED_REDUCE_TWO");
+                //out.println(WordCountUtils.takeReduceIntervals(reduce_two));
+                return;
             }
             else {
                 out.println("Error interpreting the request");

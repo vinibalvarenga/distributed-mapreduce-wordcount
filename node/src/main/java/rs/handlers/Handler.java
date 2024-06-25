@@ -34,7 +34,7 @@ public class Handler {
     }
 
     public Map<String, Integer> reduce_one() {
-        return reduceHandler.reduce();
+        return reduceHandler.reduce("firstWordCount");
     }
 
     public List<List<Integer>> group(BufferedReader in, PrintWriter out) throws IOException {
@@ -43,5 +43,9 @@ public class Handler {
 
     public void shuffle_two(List<List<Integer>> groupRanges, Map<String, Integer> reduce_one, String myIP, List<String> knownServers) {
         shuffleHandler.shuffle_two(groupRanges, reduce_one, myIP, knownServers, ftpServerManager);
+    }
+
+    public Map<String, Integer> reduce_two() {
+        return reduceHandler.reduce("groupWordCount");
     }
 }
