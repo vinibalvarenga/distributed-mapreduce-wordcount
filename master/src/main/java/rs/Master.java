@@ -7,6 +7,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.net.ftp.FTPClient;
 
+import rs.managers.FTPManager;
+import rs.managers.SocketManager;
+import rs.utils.FileSplitter;
+import rs.utils.Utils;
+
 public class Master {
     private static final String localfileName = "./master/random_lines.txt";
     private static final String fileName = "random_lines.txt";
@@ -78,6 +83,8 @@ public class Master {
         }
 
         CompletableFuture.allOf(futures3).join();
+
+
 
         ftpManager.closeFtpClients(ftpClients);
         socketManager.closeSocketsAndBuffers();

@@ -1,4 +1,4 @@
-package rs;
+package rs.managers;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

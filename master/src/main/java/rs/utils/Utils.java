@@ -1,4 +1,4 @@
-package rs;
+package rs.utils;
 
 import java.util.ArrayList;
 import java.util.List;

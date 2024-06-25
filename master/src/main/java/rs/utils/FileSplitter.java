@@ -1,4 +1,4 @@
-package rs;
+package rs.utils;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
