@@ -51,9 +51,20 @@ to quit
 ### Enviar os arquivos para o no remoto
 
 [scp] dentro da pasta target local
-	scp node-1-jar-with-dependencies.jar alvarenga-23@tp-1a252-24:/tmp/alvarenga-23/node-1-jar-with-dependencies.jar
+
+node:
+	scp node-1-jar-with-dependencies.jar alvarenga-23@tp-m5-00:/tmp/alvarenga-23/node-1-jar-with-dependencies.jar
+
+master:
+
+
 
 ### Rodar o arquivo no remoto (requer ssh)
 
 [ssh] para rodar o arquivo dentro da pasta correta do remoto
+node:
 	java -jar node-1-jar-with-dependencies.jar
+
+master:
+	java -jar master-1-jar-with-dependencies.jar
+

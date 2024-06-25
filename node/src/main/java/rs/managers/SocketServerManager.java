@@ -97,7 +97,7 @@ public class SocketServerManager {
                 return;
             } else if(line.equals("START_REDUCE_TWO")){
              //   System.out.println("Received START_REDUCE_TWO");
-                List<Entry<String, Integer>> reduce_two = handler.reduce_two();
+                handler.reduce_two();
              //   System.out.println("reduce two: " + reduce_two);
              //   System.out.println("FINISHED_REDUCE_TWO");
                 out.println("FINISHED_REDUCE_TWO");

@@ -1,1 +1,5 @@
+rs/managers/FTPManager.class
+rs/utils/FileSplitter.class
+rs/managers/SocketManager.class
+rs/utils/Utils.class
 rs/Master.class

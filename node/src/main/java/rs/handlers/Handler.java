@@ -46,9 +46,8 @@ public class Handler {
         shuffleHandler.shuffle_two(groupRanges, reduce_one, myIP, knownServers, ftpServerManager);
     }
 
-    public List<Entry<String, Integer>> reduce_two() {
+    public void reduce_two() {
         List<Entry<String, Integer>> reduce_two = ReduceHandler.sortWordCounts(reduceHandler.reduce("groupWordCount"));
         reduceHandler.writeSortedWordCountsToFile(reduce_two);
-        return reduce_two;
     }
 }
