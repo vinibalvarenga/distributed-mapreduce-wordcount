@@ -2,7 +2,10 @@ package rs.handlers;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -48,5 +51,22 @@ public class ReduceHandler {
         wordCounts.put(word, wordCounts.getOrDefault(word, 0) + count);
     }
 
+    public static List<Map.Entry<String, Integer>> sortWordCounts(Map<String, Integer> wordCounts) {
+        List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(wordCounts.entrySet());
+        sortedEntries.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
+        return sortedEntries;
+    }
+
+    public void writeSortedWordCountsToFile(List<Map.Entry<String, Integer>> sortedEntries) {
+        String fileName = "finalWordCount.txt";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (Map.Entry<String, Integer> entry : sortedEntries) {
+                writer.write(entry.getKey() + ": " + entry.getValue());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

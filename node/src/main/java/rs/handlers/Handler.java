@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import rs.managers.FTPServerManager;
 
@@ -45,7 +46,9 @@ public class Handler {
         shuffleHandler.shuffle_two(groupRanges, reduce_one, myIP, knownServers, ftpServerManager);
     }
 
-    public Map<String, Integer> reduce_two() {
-        return reduceHandler.reduce("groupWordCount");
+    public List<Entry<String, Integer>> reduce_two() {
+        List<Entry<String, Integer>> reduce_two = ReduceHandler.sortWordCounts(reduceHandler.reduce("groupWordCount"));
+        reduceHandler.writeSortedWordCountsToFile(reduce_two);
+        return reduce_two;
     }
 }

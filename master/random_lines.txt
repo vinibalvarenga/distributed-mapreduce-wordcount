@@ -2,6 +2,6 @@ S1 car car hello cat
 S2 dog cat cat hi
 S3 hi hello car car
 S4 hi hi hi hello car
-S5 
-S6 
+S5 vila vila hi hi hi
+S6 tri tri tri 
 S7 mumumuu

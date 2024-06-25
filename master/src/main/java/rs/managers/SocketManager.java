@@ -135,7 +135,7 @@ public class SocketManager {
             while ((line = reader.readLine()) != "FINISHED_REDUCE_TWO") {
                 System.out.println("Line received: " + line);
                 System.out.println(
-                        "Reduce two complete received from server " + servers.get(serverIndex) + " , result: " + line);
+                        "Reduce two complete received from server " + servers.get(serverIndex));
                 return;
             }
         } catch (Exception e) {
