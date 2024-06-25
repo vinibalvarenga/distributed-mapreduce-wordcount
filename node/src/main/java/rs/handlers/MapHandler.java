@@ -14,7 +14,7 @@ public class MapHandler {
     }
 
     public Map<String, Integer> process() {
-        System.out.println("[Starting Map]");
+     //   System.out.println("[Starting Map]");
         File file = new File(filePath);
         Map<String, Integer> wordCount = new HashMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {

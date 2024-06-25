@@ -52,7 +52,7 @@ public class SocketServerManager {
         try {
             Handler handler = new Handler(FILE_PATH, ftpServerManager);
             String line = in.readLine();
-            System.out.println("Line received: " + line);
+            // System.out.println("Line received: " + line);
             if(line == null) {
                 out.println("Error: client closed connection");
                 continueRunning = false;
@@ -71,35 +71,35 @@ public class SocketServerManager {
                 line = in.readLine();
                 if (line.equals("END_OF_IPS")) {
                     out.println(String.join(",", knownServers));
-                    System.out.println("END_OF_IPS received");
+                  //  System.out.println("END_OF_IPS received");
                     Map<String, Integer> wordCount = handler.mapHandler();
                     handler.shuffle_one( wordCount, knownServers, myIp);
                     out.println("SHUFFLE_FINISHED");
                     return;
                 }
             } else if(line.equals("START_REDUCE_ONE")){
-                System.out.println("Received START_REDUCE_ONE");
+              //  System.out.println("Received START_REDUCE_ONE");
                 reduce_one = handler.reduce_one();
-                System.out.println("reduce one: " + reduce_one);
+              //  System.out.println("reduce one: " + reduce_one);
                 String reduce_intervals = WordCountUtils.takeReduceIntervals(reduce_one);
-                System.out.println("FINISHED_REDUCE_ONE");
+             //   System.out.println("FINISHED_REDUCE_ONE");
                 out.println("FINISHED_REDUCE_ONE");
                 out.println(reduce_intervals);
                 return;
             } else if(line.equals("START_GROUP")){
-                System.out.println("Received START_GROUP");
+             //   System.out.println("Received START_GROUP");
                 myIndex = Integer.parseInt(in.readLine());
-                System.out.println("Received server index: " + myIndex);
+           //     System.out.println("Received server index: " + myIndex);
                 List<List<Integer>> groupRanges = handler.group(in, out);
-                System.out.println("FINISHED_GROUP");
+            //    System.out.println("FINISHED_GROUP");
                 handler.shuffle_two(groupRanges, reduce_one, myIp, knownServers);
                 out.println("FINISHED_SHUFFLE_TWO");
                 return;
             } else if(line.equals("START_REDUCE_TWO")){
-                System.out.println("Received START_REDUCE_TWO");
+             //   System.out.println("Received START_REDUCE_TWO");
                 List<Entry<String, Integer>> reduce_two = handler.reduce_two();
-                System.out.println("reduce two: " + reduce_two);
-                System.out.println("FINISHED_REDUCE_TWO");
+             //   System.out.println("reduce two: " + reduce_two);
+             //   System.out.println("FINISHED_REDUCE_TWO");
                 out.println("FINISHED_REDUCE_TWO");
                 //out.println(WordCountUtils.takeReduceIntervals(reduce_two));
                 return;

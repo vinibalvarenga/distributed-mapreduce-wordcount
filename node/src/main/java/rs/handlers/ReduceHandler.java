@@ -19,7 +19,7 @@ public class ReduceHandler {
                  .filter(p -> Pattern.matches(filePattern, p.getFileName().toString()))
                  .forEach(filePath -> {
                     processFile(filePath, wordCounts, file_prefix);
-                    System.out.println("wordCounts after processing " + filePath + ": " + wordCounts);
+                    // System.out.println("wordCounts after processing " + filePath + ": " + wordCounts);
                 });
         } catch (IOException e) {
             e.printStackTrace();

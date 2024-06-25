@@ -11,15 +11,15 @@ import java.util.Map;
 public class ShuffleHandler {
     public void shuffle_one(Map<String, Integer> wordCount, List<String> knownServers, String fromNodeIp,
             FTPServerManager ftpServerManager) {
-        System.out.println("[Shuffling] words to servers");
+    //    System.out.println("[Shuffling] words to servers");
         List<Map<String, Integer>> serverWordCounts = WordCountUtils.splitWordCounts(wordCount, knownServers.size());
         ftpServerManager.sendDataToServers(fromNodeIp, "firstWordCount",serverWordCounts, knownServers, true);
-        System.out.println("[Shuffling] finished");
+    //    System.out.println("[Shuffling] finished");
     }
 
     public void shuffle_two(List<List<Integer>> groupRanges, Map<String, Integer> reduce_one, String myIP,
             List<String> knownServers, FTPServerManager ftpServerManager) {
-        System.out.println("[Shuffling] groups to servers");
+    //    System.out.println("[Shuffling] groups to servers");
         List<List<Map.Entry<String, Integer>>> serverEntries = new ArrayList<>();
         for (int i = 0; i < knownServers.size(); i++) {
             serverEntries.add(new ArrayList<>());
@@ -36,10 +36,10 @@ public class ShuffleHandler {
             }
         }
 
-        System.out.println("Server entries: " + serverEntries);
+      //  System.out.println("Server entries: " + serverEntries);
 
         ftpServerManager.sendDataToServers(myIP, "groupWordCount",serverEntries, knownServers, false);
-        System.out.println("[Shuffling] finished");
+      //  System.out.println("[Shuffling] finished");
     }
 
 }

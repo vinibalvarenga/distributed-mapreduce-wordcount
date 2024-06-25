@@ -18,7 +18,7 @@ public class GroupHandler {
                                         .collect(Collectors.toList());
             groupRanges.add(range);
         }
-        System.out.println("Received group ranges: " + groupRanges);
+       // System.out.println("Received group ranges: " + groupRanges);
         return groupRanges;
     }
 }
