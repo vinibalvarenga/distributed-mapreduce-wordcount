@@ -90,7 +90,7 @@ public class Master {
         for (int i = 0; i < servers.size(); i++) {
             int serverIndex = i;
 
-            futures2[serverIndex] = CompletableFuture.runAsync(() -> {
+            futures4[serverIndex] = CompletableFuture.runAsync(() -> {
                 System.out.println("Starting reduce two phase for server " + servers.get(serverIndex));
                 socketManager.reduce_two(serverIndex);
                 // Utils.extractIntegersAndAddToList(reduce, reducedRanges, serverIndex);
