@@ -26,9 +26,9 @@ public class ShuffleHandler {
         }
 
         for (Map.Entry<String, Integer> entry : reduce_one.entrySet()) {
-            for (int i = 0; i < groupRanges.size(); i++) {
-                int min = groupRanges.get(i).get(0);
-                int max = groupRanges.get(i).get(1);
+            for (int i = 0; i < groupRanges.get(0).size(); i++) {
+                int min = groupRanges.get(0).get(i);
+                int max = groupRanges.get(1).get(i);
                 if (entry.getValue() >= min && entry.getValue() <= max) {
                     serverEntries.get(i).add(entry);
                     break;
