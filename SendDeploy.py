@@ -12,7 +12,7 @@ password = getpass.getpass("Enter password for {}: ".format(login))
 
 node_project_name = "node"
 master_project_name = "master"
-file_suffix = "-1.0-jar-with-dependencies.jar"
+file_suffix = "-1-jar-with-dependencies.jar"
 remote_folder = "/tmp/{}/".format(login)
 
 # List of computers

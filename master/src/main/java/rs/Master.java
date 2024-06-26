@@ -11,6 +11,7 @@ import rs.managers.FTPManager;
 import rs.managers.SocketManager;
 import rs.utils.FileSplitter;
 import rs.utils.MultipleTimer;
+import rs.utils.PrintCSV;
 import rs.utils.Utils;
 
 public class Master {
@@ -172,6 +173,8 @@ public class Master {
             System.out.println("Communication time: " + communication_time);
             System.out.println("Computation time: " + computation_time);
             System.out.println("Synchronization time: " + synchronization_time);
+
+            PrintCSV.printResultsToCSV(servers.size(), communication_time, computation_time, synchronization_time);
 
         } else {
             System.out.println("Please provide the list of servers as an argument");
