@@ -1,4 +1,69 @@
-# General notes
+
+# Using the deployment script in a venv:
+
+### Create and Activate a Virtual Environment:
+
+```
+python3 -m venv slr207
+source slr207/bin/activate
+```
+
+### Install paramiko and scp in the Virtual Environment:
+
+```
+pip install paramiko scp
+```
+
+### Run Your Script:
+Ensure your script is using the virtual environment's Python interpreter. You can run the script directly while the virtual environment is activated.
+
+```
+source slr207/bin/activate
+python SendDeploy.py
+```
+
+
+
+### OBS.: SSH connection
+to open
+```
+	ssh alvarenga-23@tp-1a201-22
+```
+
+to quit
+```
+	exit
+```
+
+
+### Enviar os arquivos para o no remoto
+
+[scp] dentro da pasta target local
+
+node:
+```
+	scp node-1-jar-with-dependencies.jar alvarenga-23@tp-m5-00:/tmp/alvarenga-23/node-1-jar-with-dependencies.jar
+```
+master:
+
+
+
+### Rodar o arquivo no remoto (requer ssh)
+
+[ssh] para rodar o arquivo dentro da pasta correta do remoto
+node:
+```
+	java -jar node-1-jar-with-dependencies.jar
+```
+
+master:
+```
+	java -jar master-1-jar-with-dependencies.jar
+```
+
+# Apendix
+
+### General notes
 List of computers
 
 https://tp.telecom-paris.fr/
@@ -28,7 +93,7 @@ To execute it, use the maven pluting.
 		first compile, then create the executable file using the command - mvn package (I think)
 
 
-# First class
+### First class
 Steps to deploy manually
 1.⁠ ⁠Compile the server (Assembly)
     mvn compile
@@ -39,32 +104,4 @@ Steps to deploy manually
 4.⁠ ⁠Execute the Jar using SSH ( java -jar ___.jar)
 5. Modify the FTP client to connect to the 3 FTB servers
 and send S1 S2 and S3 then try with S4 S5 S6 (create manual simple strings)
-
-### OBS.: SSH connection
-to open
-	ssh alvarenga-23@tp-1a201-22
-
-to quit
-	exit
-
-
-### Enviar os arquivos para o no remoto
-
-[scp] dentro da pasta target local
-
-node:
-	scp node-1-jar-with-dependencies.jar alvarenga-23@tp-m5-00:/tmp/alvarenga-23/node-1-jar-with-dependencies.jar
-
-master:
-
-
-
-### Rodar o arquivo no remoto (requer ssh)
-
-[ssh] para rodar o arquivo dentro da pasta correta do remoto
-node:
-	java -jar node-1-jar-with-dependencies.jar
-
-master:
-	java -jar master-1-jar-with-dependencies.jar
 

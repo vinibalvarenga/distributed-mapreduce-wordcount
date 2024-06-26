@@ -16,7 +16,8 @@ public class Master {
     //private static final String localfileName = "./master/random_lines.txt";
     private static final  String localfileName = "/cal/commoncrawl/CC-MAIN-20230320114206-20230320144206-00516.warc.wet";
     private static final String fileName = "random_lines.txt";
-    private static final List<String> servers = Arrays.asList("tp-m5-00", "tp-m5-01", "tp-m5-02");
+    //private static final List<String> servers = Arrays.asList("tp-m5-00", "tp-m5-01", "tp-m5-02");
+    private static final List<String> servers = Arrays.asList("tp-m5-00");
 
     public static void main(String[] args) {
         List<String> contents = FileSplitter.readFileContents(localfileName);
