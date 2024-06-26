@@ -1,5 +1,7 @@
 rs/managers/FTPManager.class
-rs/utils/FileSplitter.class
 rs/managers/SocketManager.class
-rs/utils/Utils.class
+rs/utils/Timer.class
 rs/Master.class
+rs/utils/FileSplitter.class
+rs/utils/MultipleTimer.class
+rs/utils/Utils.class

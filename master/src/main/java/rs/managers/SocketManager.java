@@ -37,7 +37,7 @@ public class SocketManager {
         }
     }
 
-    public void sendServerIPsAndStartMapFunction(int serverIndex) {
+    public void sendServersIPs(int serverIndex) {
         try {
             BufferedWriter writer = writers.get(serverIndex);
 
@@ -62,8 +62,12 @@ public class SocketManager {
         }
     }
 
-    public void receiveMap(int serverIndex){
+    public void sendMap(int serverIndex){
         try {
+            BufferedWriter writer = writers.get(serverIndex);
+            writer.write("START_MAP\n");
+            writer.flush();
+
             BufferedReader reader = readers.get(serverIndex);
             String line;
             while ((line = reader.readLine()) != null) {
