@@ -149,6 +149,19 @@ public class Master {
 
             CompletableFuture.allOf(futures4).join();
 
+            CompletableFuture<?>[] futures5 = new CompletableFuture<?>[servers.size()];
+
+            for (int i = 0; i < servers.size(); i++) {
+                int serverIndex = i;
+
+                futures5[serverIndex] = CompletableFuture.runAsync(() -> {
+                    System.out.println("Resetting server " + servers.get(serverIndex));
+                    socketManager.sendResetServer(serverIndex);
+                });
+            }
+
+            CompletableFuture.allOf(futures5).join();
+
             ftpManager.closeFtpClients(ftpClients);
             socketManager.closeSocketsAndBuffers();
 

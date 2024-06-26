@@ -17,9 +17,9 @@ import rs.utils.WordCountUtils;
 public class SocketServerManager {
     private final int socketPort;
     private static final String FILE_PATH = System.getProperty("java.io.tmpdir") + "/alvarenga-23/random_lines.txt";
-    private static List<String> knownServers = new ArrayList<>();
-    private static String myIp;
-    private static int myIndex;
+    private List<String> knownServers = new ArrayList<>();
+    private String myIp;
+    private int myIndex;
     private Map<String, Integer> reduce_one;
     private boolean continueRunning = true;
 
@@ -43,6 +43,7 @@ public class SocketServerManager {
                 while (continueRunning) {
                     handleRequest(in, out);
                 }
+                continueRunning = true;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,6 +106,9 @@ public class SocketServerManager {
                 // System.out.println("FINISHED_REDUCE_TWO");
                 out.println("FINISHED_REDUCE_TWO");
                 // out.println(WordCountUtils.takeReduceIntervals(reduce_two));
+                return;
+            } else if (line.equals("RESET_SERVER")) {
+                continueRunning = false;
                 return;
             } else {
                 out.println("Error interpreting the request");

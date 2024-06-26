@@ -21,6 +21,7 @@ public class FTPServerManager {
     private static final String USERNAME = "toto";
     private static final String PASSWORD = "tata";
     private static final String HOME_DIRECTORY = System.getProperty("java.io.tmpdir") + "/alvarenga-23/";
+    private FtpServer server;
 
     public FTPServerManager(int ftpPort) {
         this.ftpPort = ftpPort;
@@ -35,7 +36,7 @@ public class FTPServerManager {
         UserManager userManager = UserManagerUtil.createUserManager(USERNAME, PASSWORD, HOME_DIRECTORY);
         serverFactory.setUserManager(userManager);
 
-        FtpServer server = serverFactory.createServer();
+        server = serverFactory.createServer();
         try {
             server.start();
             System.out.println("FTP Server started on port " + ftpPort);
@@ -108,6 +109,23 @@ public class FTPServerManager {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void resetFTPServer(){
+        try {
+            // Passo 1: Verificar se o servidor está rodando e pará-lo
+            if (server != null && !server.isStopped()) {
+                server.stop();
+                System.out.println("FTP Server stopped.");
+            }
+    
+            // Passo 2 e 3: Recriar e reiniciar o servidor FTP com as configurações iniciais
+            createAndStartFTPServer();
+            System.out.println("FTP Server restarted.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error resetting FTP server: " + e.getMessage());
         }
     }
 }

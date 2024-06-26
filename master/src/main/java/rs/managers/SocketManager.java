@@ -188,4 +188,13 @@ public class SocketManager {
         }
     }
 
+    public void sendResetServer(int serverIndex){
+        try {
+            BufferedWriter writer = writers.get(serverIndex);
+            writer.write("RESET_SERVER\n");
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
