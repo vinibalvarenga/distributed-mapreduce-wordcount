@@ -62,6 +62,21 @@ public class SocketManager {
         }
     }
 
+    public void receiveMap(int serverIndex){
+        try {
+            BufferedReader reader = readers.get(serverIndex);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.equals("MAP_FINISHED")) {
+                    System.out.println("Map complete received from server " + servers.get(serverIndex) + ".");
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void receiveShuffleOneCompleteMessages(int serverIndex) {
         try {
             BufferedReader reader = readers.get(serverIndex);

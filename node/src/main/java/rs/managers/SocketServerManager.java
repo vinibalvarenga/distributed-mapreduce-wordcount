@@ -73,6 +73,7 @@ public class SocketServerManager {
                     out.println(String.join(",", knownServers));
                   //  System.out.println("END_OF_IPS received");
                     Map<String, Integer> wordCount = handler.mapHandler();
+                    out.println("MAP_FINISHED");
                     handler.shuffle_one( wordCount, knownServers, myIp);
                     out.println("SHUFFLE_FINISHED");
                     return;
