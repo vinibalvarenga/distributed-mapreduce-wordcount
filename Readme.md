@@ -1,5 +1,18 @@
 
+# compile
+
+If you download the jar from the repository there's no need to compile, otherwise, you can inside the folder master and after in the folder node this command:
+
+```
+mvn clean compile assembly:single
+```
+
 # Using the deployment script in a venv:
+
+You must run the project inside a venv to be safer.
+
+*IMPORTANT: edit the script to select the machines you want to use as nodes and master.*
+
 
 ### Create and Activate a Virtual Environment:
 
@@ -17,49 +30,14 @@ pip install paramiko scp
 ### Run Your Script:
 Ensure your script is using the virtual environment's Python interpreter. You can run the script directly while the virtual environment is activated.
 
+It will ask for your telecom's login and password. Make sure you are connected to telecom's network or VPN.
+
+
 ```
 source slr207/bin/activate
 python SendDeploy.py
 ```
 
-
-
-### OBS.: SSH connection
-to open
-```
-	ssh alvarenga-23@tp-1a201-22
-```
-
-to quit
-```
-	exit
-```
-
-
-### Enviar os arquivos para o no remoto
-
-[scp] dentro da pasta target local
-
-node:
-```
-	scp node-1-jar-with-dependencies.jar alvarenga-23@tp-m5-00:/tmp/alvarenga-23/node-1-jar-with-dependencies.jar
-```
-master:
-
-
-
-### Rodar o arquivo no remoto (requer ssh)
-
-[ssh] para rodar o arquivo dentro da pasta correta do remoto
-node:
-```
-	java -jar node-1-jar-with-dependencies.jar
-```
-
-master:
-```
-	java -jar master-1-jar-with-dependencies.jar
-```
 
 # Apendix
 
@@ -105,3 +83,41 @@ Steps to deploy manually
 5. Modify the FTP client to connect to the 3 FTB servers
 and send S1 S2 and S3 then try with S4 S5 S6 (create manual simple strings)
 
+
+
+### OBS.: SSH connection
+to open
+```
+	ssh alvarenga-23@tp-1a201-22
+```
+
+to quit
+```
+	exit
+```
+
+
+### Enviar os arquivos para o no remoto
+
+[scp] dentro da pasta target local
+
+node:
+```
+	scp node-1-jar-with-dependencies.jar alvarenga-23@tp-m5-00:/tmp/alvarenga-23/node-1-jar-with-dependencies.jar
+```
+master:
+
+
+
+### Rodar o arquivo no remoto (requer ssh)
+
+[ssh] para rodar o arquivo dentro da pasta correta do remoto
+node:
+```
+	java -jar node-1-jar-with-dependencies.jar
+```
+
+master:
+```
+	java -jar master-1-jar-with-dependencies.jar
+```
