@@ -1,123 +1,136 @@
 
-# compile
+# Distributed MapReduce Word Count System
 
-If you download the jar from the repository there's no need to compile, otherwise, you can inside the folder master and after in the folder node this command:
+**Suggested Project Name: `distributed-mapreduce-wordcount`**
 
-```
+This project implements a distributed MapReduce system for large-scale word counting operations using Java. The system follows the classic MapReduce paradigm with a master-worker architecture, utilizing FTP for data distribution and TCP sockets for coordination.
+
+## Architecture Overview
+
+The system consists of two main components:
+
+### Master Node (`master/`)
+- **Orchestrator**: Coordinates the entire MapReduce workflow
+- **Data Distribution**: Splits large text files and distributes chunks to worker nodes via FTP
+- **Phase Coordination**: Manages Map, Shuffle, and Reduce phases across all nodes
+- **Performance Monitoring**: Tracks communication, computation, and synchronization times
+- **Result Aggregation**: Collects final word count results and generates CSV reports
+
+### Worker Nodes (`node/`)
+- **FTP Server**: Receives data chunks from the master node
+- **Map Phase**: Processes text data to generate word counts
+- **Shuffle Phase**: Redistributes word counts based on hash partitioning
+- **Reduce Phase**: Aggregates word counts from multiple nodes
+- **Group Phase**: Organizes data for final reduction
+
+## Key Features
+
+- **Distributed Processing**: Scales across multiple machines for large datasets
+- **Fault Tolerance**: Uses reliable FTP and TCP protocols for communication
+- **Performance Analysis**: Built-in timing mechanisms for bottleneck identification
+- **Flexible Deployment**: Python deployment script for easy cluster setup
+- **Real-world Ready**: Designed to process CommonCrawl web data
+
+## How It Works
+
+1. **Data Splitting**: Master splits input file into chunks distributed across worker nodes
+2. **Map Phase**: Each worker counts words in its assigned data chunk
+3. **Shuffle Phase 1**: Word counts are redistributed based on hash partitioning
+4. **Reduce Phase 1**: Initial aggregation of word counts per partition
+5. **Group Phase**: Determines value ranges for final grouping
+6. **Shuffle Phase 2**: Redistributes data based on value ranges
+7. **Reduce Phase 2**: Final word count aggregation and result collection
+
+## Build and Deployment
+
+### Compilation
+
+If you download the JAR from the repository, no compilation is needed. Otherwise, run this command in both `master/` and `node/` directories:
+
+```bash
 mvn clean compile assembly:single
 ```
 
-# Using the deployment script in a venv:
+### Using the Deployment Script
 
-You must run the project inside a venv to be safer.
+The deployment script automates the process of setting up the distributed system. Run it in a virtual environment for safety.
 
-*IMPORTANT: edit the script to select the machines you want to use as nodes and master.*
+**IMPORTANT**: Edit the script to select the machines you want to use as nodes and master.
 
+#### Setup Virtual Environment:
 
-### Create and Activate a Virtual Environment:
-
-```
+```bash
 python3 -m venv slr207
 source slr207/bin/activate
-```
-
-### Install paramiko and scp in the Virtual Environment:
-
-```
 pip install paramiko scp
 ```
 
-### Run Your Script:
-Ensure your script is using the virtual environment's Python interpreter. You can run the script directly while the virtual environment is activated.
+#### Deploy the System:
 
-It will ask for your telecom's login and password. Make sure you are connected to telecom's network or VPN.
-
-
-```
+```bash
 source slr207/bin/activate
 python SendDeploy.py
 ```
 
-
-# Apendix
-
-### General notes
-List of computers
-
-https://tp.telecom-paris.fr/
-
-All web pages text with splits
-First task - separate the data into different machines. Do the splits.
-	Main (orchestrator)
-		takes diffeent splits and distribute them to the local disks of nodes (SN1,CN1 - SN2,CN2, ...)
-		TDLR: main copies parts of the files and distribute it into different computers.
-
-Implementation using File Transfer Protocol (FTP):
-
-We use FTP servers and FTP clients
-
-main (orchestrator) - FTP client
-SN1,CN1 - S... are the FTP servers.
-
-Deploy Script 
-	Take a list of nodes
-	Copy the FTP server
-	Start it
-
-How to create the executable to deploy:
-Use maven - pom.xml file available. 
-To execute it, use the maven pluting. 
-	Go to maven, myftpserver, plugins, assembly, single - this will create an executable file.
-		first compile, then create the executable file using the command - mvn package (I think)
+The script will prompt for your network credentials. Ensure you're connected to the target network or VPN.
 
 
-### First class
-Steps to deploy manually
-1.⁠ ⁠Compile the server (Assembly)
-    mvn compile
-2.⁠ ⁠Generate the JAR (JAVA archive) using the Maven plugin Assembly "single"
-	mvn clean compile assembly:single
-3.1 create /tmp/you_login with SSH on the local disk of each computer 
-3.2⁠ ⁠Copy the JAR on N1 N2 N3 using SCP  /temp/your_login/____.jar
-4.⁠ ⁠Execute the Jar using SSH ( java -jar ___.jar)
-5. Modify the FTP client to connect to the 3 FTB servers
-and send S1 S2 and S3 then try with S4 S5 S6 (create manual simple strings)
+## Manual Deployment Steps
 
+For manual deployment and testing:
 
+### 1. Compile and Package
+```bash
+# In master/ directory
+mvn clean compile assembly:single
 
-### OBS.: SSH connection
-to open
-```
-	ssh alvarenga-23@tp-1a201-22
+# In node/ directory  
+mvn clean compile assembly:single
 ```
 
-to quit
-```
-	exit
-```
+### 2. Deploy to Remote Nodes
+```bash
+# Copy node JAR to remote machine
+scp node-1-jar-with-dependencies.jar username@remote-host:/tmp/username/
 
-
-### Enviar os arquivos para o no remoto
-
-[scp] dentro da pasta target local
-
-node:
-```
-	scp node-1-jar-with-dependencies.jar alvarenga-23@tp-m5-00:/tmp/alvarenga-23/node-1-jar-with-dependencies.jar
-```
-master:
-
-
-
-### Rodar o arquivo no remoto (requer ssh)
-
-[ssh] para rodar o arquivo dentro da pasta correta do remoto
-node:
-```
-	java -jar node-1-jar-with-dependencies.jar
+# Copy master JAR to master machine
+scp master-1-jar-with-dependencies.jar username@master-host:/tmp/username/
 ```
 
-master:
+### 3. Execute on Remote Machines
+```bash
+# SSH to remote node and run
+ssh username@remote-host
+java -jar /tmp/username/node-1-jar-with-dependencies.jar
+
+# SSH to master and run with server list
+ssh username@master-host
+java -jar /tmp/username/master-1-jar-with-dependencies.jar server1,server2,server3
 ```
-	java -jar master-1-jar-with-dependencies.jar
-```
+
+## Performance Analysis
+
+The system includes comprehensive performance monitoring:
+
+- **Communication Time**: File transfer and data shuffling overhead
+- **Computation Time**: Map and Reduce operation execution time  
+- **Synchronization Time**: Coordination and waiting between phases
+
+Results are automatically exported to `results.csv` and can be analyzed using the included Jupyter notebook (`analysis.ipynb`).
+
+## File Structure
+
+- `master/` - Master node implementation with coordination logic
+- `node/` - Worker node implementation with MapReduce handlers  
+- `SendDeploy.py` - Automated deployment script
+- `analysis.ipynb` - Performance analysis and visualization
+- `results.csv` - Execution timing results
+- `nodes.txt` - List of available worker nodes
+
+## Technical Details
+
+- **Communication**: FTP for data transfer, TCP sockets for control messages
+- **Data Processing**: Word counting with hash-based partitioning
+- **Scalability**: Supports arbitrary number of worker nodes
+- **Input Format**: Plain text files (designed for CommonCrawl data)
+- **Output Format**: CSV with word counts and performance metrics
